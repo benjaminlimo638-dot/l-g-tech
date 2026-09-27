@@ -1,0 +1,23 @@
+{
+  "overview": "A mobile-friendly web app for L&G TECH cell phone repair shop where customers request repairs and track their status, and staff manage orders from a private admin panel.",
+  "features": [
+    "Request a phone repair with photos and a description",
+    "Get a unique repair code to track your device",
+    "Track repair status on a six-step progress line",
+    "See diagnosis, price, deposit, balance and estimated time",
+    "Private admin panel to manage clients, devices and repair orders",
+    "Search repairs by name, phone, code or model",
+    "Email notification when a repair status changes",
+    "Contact the shop directly on WhatsApp"
+  ],
+  "category": "business-management",
+  "tags": [
+    "repair",
+    "cell-phones",
+    "service",
+    "tracking",
+    "admin-panel",
+    "spanish"
+  ],
+  "last_updated": "2026-09-27T17:10:58.868Z"
+}

@@ -1,0 +1,223 @@
+type Value = 
+ variant {
+   "bool": bool;
+   float: float64;
+   "int": int;
+   "nat": nat;
+   "null";
+   "text": text;
+ };
+type UserRole = 
+ variant {
+   admin;
+   guest;
+   user;
+ };
+type Timestamp = int;
+type StatusChangeResult = 
+ variant {
+   notFound;
+   ok: record {
+         notificationSent: bool;
+         order: AdminRepairView;
+       };
+ };
+type Result__1 = 
+ variant {
+   err: Error;
+   ok;
+ };
+type Result = 
+ record {
+   hasMore: bool;
+   rows: vec vec Cell;
+ };
+type RepairStatus = 
+ variant {
+   Diagnosticando;
+   EnReparacion;
+   Entregado;
+   ListoParaEntregar;
+   Probando;
+   Recibido;
+ };
+type RepairRequestInput = 
+ record {
+   additionalDescription: text;
+   brand: text;
+   damagePhotoFileIds: vec FileId;
+   email: opt text;
+   fullName: text;
+   model: text;
+   phone: Phone;
+   reportedIssue: text;
+ };
+type RepairOrderUpdate = 
+ record {
+   deposit: opt nat;
+   diagnosis: opt text;
+   estimatedDeliveryDate: opt Timestamp;
+   estimatedTime: opt text;
+   observations: opt text;
+   totalPrice: opt nat;
+ };
+type RepairCode = text;
+type PublicRepairView = 
+ record {
+   balance: nat;
+   brand: text;
+   code: RepairCode;
+   damagePhotoFileIds: vec FileId;
+   deposit: nat;
+   devicePhotoFileIds: vec FileId;
+   diagnosis: text;
+   estimatedDeliveryDate: opt Timestamp;
+   estimatedTime: text;
+   fullName: text;
+   intakeDate: Timestamp;
+   model: text;
+   observations: text;
+   reportedIssue: text;
+   status: RepairStatus;
+   totalPrice: nat;
+ };
+type Phone = text;
+type OrderId = nat;
+type LookupResult = 
+ variant {
+   found: PublicRepairView;
+   notFound;
+ };
+type IntakeInput = 
+ record {
+   brand: text;
+   deposit: nat;
+   devicePhotoFileIds: vec FileId;
+   dni: text;
+   dniPhotoFileId: opt FileId;
+   email: opt text;
+   fullName: text;
+   imei: opt text;
+   model: text;
+   phone: Phone;
+   physicalCondition: text;
+   reportedIssue: text;
+   totalPrice: nat;
+ };
+type FileId = text;
+type Error = 
+ variant {
+   AmbiguousAttribute: record {
+                         field: text;
+                         sources: vec text;
+                       };
+   FrontendOriginMismatch: record {
+                             expected: vec text;
+                             got: text;
+                           };
+   FrontendOriginsNotConfigured;
+   MalformedCandid;
+   MissingField: text;
+   MixedSsoSources: record {
+                      otherKeys: vec text;
+                      ssoKeys: vec text;
+                    };
+   NoAttributes;
+   Stale: record {ageNs: nat;};
+   UnknownNonce;
+   UntrustedSsoSource: record {domain: text;};
+ };
+type Device = 
+ record {
+   brand: text;
+   id: OrderId;
+   imei: opt text;
+   model: text;
+   physicalCondition: text;
+ };
+type Client = 
+ record {
+   createdAt: Timestamp;
+   dni: text;
+   email: opt text;
+   fullName: text;
+   id: OrderId;
+   phone: Phone;
+ };
+type Cell = 
+ record {
+   name: text;
+   value: Value;
+ };
+type AdminRepairView = 
+ record {
+   additionalDescription: text;
+   balance: nat;
+   client: Client;
+   code: RepairCode;
+   createdAt: Timestamp;
+   damagePhotoFileIds: vec FileId;
+   deliveredAt: opt Timestamp;
+   deposit: nat;
+   device: Device;
+   devicePhotoFileIds: vec FileId;
+   diagnosis: text;
+   estimatedDeliveryDate: opt Timestamp;
+   estimatedTime: text;
+   hasDniPhoto: bool;
+   id: OrderId;
+   intakeDate: Timestamp;
+   observations: text;
+   reportedIssue: text;
+   status: RepairStatus;
+   totalPrice: nat;
+   updatedAt: Timestamp;
+ };
+service : {
+  _initialize_access_control: () -> ();
+  _internet_identity_sign_in_finish: () -> (Result__1);
+  _internet_identity_sign_in_start: () -> (blob);
+  /// Attach additional photos to an order. Admin only.
+  addOrderPhotos: (id: OrderId, damagePhotoFileIds: vec FileId,
+   devicePhotoFileIds: vec FileId) -> (AdminRepairView);
+  assignCallerUserRole: (user: principal, role: UserRole) -> ();
+  /// Change the status of an order. When `notify` is true, sends an email to the
+  /// client with the repair code and the new status. Admin only.
+  changeRepairStatus: (id: OrderId, status: RepairStatus, notify: bool) ->
+   (StatusChangeResult);
+  /// Create a repair order from an admin intake (reception) form. Admin only.
+  createRepairOrder: (input: IntakeInput) -> (AdminRepairView);
+  execute: (qJson: text) -> (Result) query;
+  /// Static Markdown documentation of the public backend API.
+  getApiDoc: () -> (text) query;
+  getCallerUserRole: () -> (UserRole) query;
+  /// Retrieve the PRIVATE DNI photo file id for an order. Admin only; never
+  /// exposed through any public/customer endpoint.
+  getDniPhoto: (id: OrderId) -> (opt FileId) query;
+  isCallerAdmin: () -> (bool) query;
+  /// List all completed (delivered) orders. Admin only.
+  listCompletedRepairs: () -> (vec AdminRepairView) query;
+  /// List all orders still in progress (not yet delivered). Admin only.
+  listPendingRepairs: () -> (vec AdminRepairView) query;
+  /// Look up a single repair by code and/or phone. Returns only that order's
+  /// public fields; never exposes the DNI photo or other customers' orders.
+  /// When both a code and a phone are supplied, the order must match BOTH:
+  /// a valid code with a mismatched phone yields #notFound.
+  lookupRepair: (code: opt RepairCode, phone: opt Phone) ->
+   (LookupResult) query;
+  /// Register a new client. Admin only.
+  registerClient: (fullName: text, phone: Phone, dni: text) -> (Client);
+  /// Register a new device. Admin only.
+  registerDevice: (brand: text, model: text, imei: opt text,
+   physicalCondition: text) -> (Device);
+  schema: () -> (text) query;
+  /// Search orders by name, phone, code or model. Admin only.
+  searchRepairs: (term: text) -> (vec AdminRepairView) query;
+  /// Submit a repair request from the customer app. Creates the client (if new),
+  /// the device, and the order, and returns the generated repair code.
+  submitRepairRequest: (input: RepairRequestInput) -> (RepairCode);
+  /// Update an existing order's diagnosis, price, deposit, estimate, delivery
+  /// date and observations. Balance is recomputed automatically. Admin only.
+  updateRepairOrder: (id: OrderId, update: RepairOrderUpdate) ->
+   (AdminRepairView);
+}

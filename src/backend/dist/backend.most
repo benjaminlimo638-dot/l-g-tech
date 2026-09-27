@@ -1,0 +1,171 @@
+// Version: 4.0.0
+type AccessControlState__201339279 =
+  {
+    var adminAssigned : Bool;
+    userRoles : Map__230067015<Principal, UserRole__91647283>
+  };
+type Client__173174173 =
+  {
+    createdAt : Timestamp__543422105;
+    dni : Text;
+    email : ?Text;
+    fullName : Text;
+    id : OrderId__439305376;
+    phone : Phone__605296282
+  };
+type Client__976148810 =
+  {
+    createdAt : Timestamp__289697827;
+    dni : Text;
+    email : ?Text;
+    fullName : Text;
+    id : OrderId__273681206;
+    phone : Phone__38116627
+  };
+type Data__44217153<K, V> = {var count : Nat__227979830; kvs : [var ?(K, V)]};
+type Device__1064154869 =
+  {
+    brand : Text;
+    id : OrderId__273681206;
+    imei : ?Text;
+    model : Text;
+    physicalCondition : Text
+  };
+type Device__125533384 =
+  {
+    brand : Text;
+    id : OrderId__439305376;
+    imei : ?Text;
+    model : Text;
+    physicalCondition : Text
+  };
+type FileId__215002156 = Text;
+type FileId__283657257 = Text;
+type FileId__474091356 = FileId__283657257;
+type Internal__283199666<K, V> =
+  {children : [var ?Node__204828119<K, V>]; data : Data__44217153<K, V>};
+type Leaf__598469445<K, V> = {data : Data__44217153<K, V>};
+type Map__230067015<K, V> = Map__405889023<K, V>;
+type Map__405889023<K, V> = Map__603270868<K, V>;
+type Map__603270868<K, V> =
+  {var root : Node__204828119<K, V>; var size : Nat__227979830};
+type Nat__227979830 = Nat__920180692;
+type Nat__920180692 = Nat;
+type NewActor__542939523 =
+  {
+    accessControlState : AccessControlState__201339279;
+    clients : Map__230067015<OrderId__273681206, Client__976148810>;
+    counters :
+      {var nextClientId : Nat; var nextDeviceId : Nat; var nextOrderId : Nat};
+    devices : Map__230067015<OrderId__273681206, Device__1064154869>;
+    orders : Map__230067015<OrderId__273681206, RepairOrder__479029063>
+  };
+type Node__204828119<K, V> =
+  {#internal : Internal__283199666<K, V>; #leaf : Leaf__598469445<K, V>};
+type OldActor__290751315 = {};
+type OrderId__197865225 = Nat;
+type OrderId__273681206 = Nat;
+type OrderId__439305376 = OrderId__197865225;
+type Phone__175229797 = Text;
+type Phone__38116627 = Text;
+type Phone__605296282 = Phone__175229797;
+type RepairCode__649347402 = RepairCode__921572404;
+type RepairCode__764834189 = Text;
+type RepairCode__921572404 = Text;
+type RepairOrder__479029063 =
+  {
+    additionalDescription : Text;
+    balance : Nat;
+    clientId : OrderId__273681206;
+    code : RepairCode__764834189;
+    createdAt : Timestamp__289697827;
+    damagePhotoFileIds : [FileId__215002156];
+    deliveredAt : ?Timestamp__289697827;
+    deposit : Nat;
+    deviceId : OrderId__273681206;
+    devicePhotoFileIds : [FileId__215002156];
+    diagnosis : Text;
+    dniPhotoFileId : ?FileId__215002156;
+    estimatedDeliveryDate : ?Timestamp__289697827;
+    estimatedTime : Text;
+    id : OrderId__273681206;
+    intakeDate : Timestamp__289697827;
+    observations : Text;
+    reportedIssue : Text;
+    status : RepairStatus__512374446;
+    totalPrice : Nat;
+    updatedAt : Timestamp__289697827
+  };
+type RepairOrder__498123221 =
+  {
+    additionalDescription : Text;
+    balance : Nat;
+    clientId : OrderId__439305376;
+    code : RepairCode__649347402;
+    createdAt : Timestamp__543422105;
+    damagePhotoFileIds : [FileId__474091356];
+    deliveredAt : ?Timestamp__543422105;
+    deposit : Nat;
+    deviceId : OrderId__439305376;
+    devicePhotoFileIds : [FileId__474091356];
+    diagnosis : Text;
+    dniPhotoFileId : ?FileId__474091356;
+    estimatedDeliveryDate : ?Timestamp__543422105;
+    estimatedTime : Text;
+    id : OrderId__439305376;
+    intakeDate : Timestamp__543422105;
+    observations : Text;
+    reportedIssue : Text;
+    status : RepairStatus__800589215;
+    totalPrice : Nat;
+    updatedAt : Timestamp__543422105
+  };
+type RepairStatus__512374446 =
+  {
+    #Diagnosticando;
+    #EnReparacion;
+    #Entregado;
+    #ListoParaEntregar;
+    #Probando;
+    #Recibido
+  };
+type RepairStatus__800589215 =
+  {
+    #Diagnosticando;
+    #EnReparacion;
+    #Entregado;
+    #ListoParaEntregar;
+    #Probando;
+    #Recibido
+  };
+type Timestamp__289697827 = Int;
+type Timestamp__301639476 = Int;
+type Timestamp__543422105 = Timestamp__301639476;
+type UserRole__91647283 = {#admin; #guest; #user};
+{
+  "20260927_130000" : OldActor__290751315 -> NewActor__542939523
+}
+actor  {
+  stable accessControlState :
+    {
+      var adminAssigned : Bool;
+      userRoles : Map__230067015<Principal, UserRole__91647283>
+    };
+  stable clients :
+    {
+      var root : Node__204828119<OrderId__439305376, Client__173174173>;
+      var size : Nat__227979830
+    };
+  stable counters :
+    {var nextClientId : Nat; var nextDeviceId : Nat; var nextOrderId : Nat};
+  stable devices :
+    {
+      var root : Node__204828119<OrderId__439305376, Device__125533384>;
+      var size : Nat__227979830
+    };
+  stable orders :
+    {
+      var root : Node__204828119<OrderId__439305376, RepairOrder__498123221>;
+      var size : Nat__227979830
+    }
+};
